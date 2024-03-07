@@ -4,6 +4,7 @@ from sqlalchemy.orm import validates
 import re
 from flask_bcrypt import Bcrypt 
 from sqlalchemy.ext.hybrid import hybrid_property
+from datetime import time,datetime
 
 db = SQLAlchemy()
 bcrypt = Bcrypt()
@@ -14,6 +15,7 @@ class User(db.Model,SerializerMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String, nullable=False, unique=True)
     email = db.Column(db.String, nullable=False, unique=True)
+    contact = db.Column(db.Integer )
     hashed_password = db.Column(db.String, nullable=False)
 
     # during signup??
@@ -61,9 +63,9 @@ class Event(db.Model,SerializerMixin):
 
     id = db.Column(db.Integer, primary_key=True)
     event_name = db.Column(db.String)
-    start_date = db.Column(db.DateTime)
-    end_date = db.Column(db.DateTime)
-    event_time = db.Column(db.DateTime)
+    start_date = db.Column(db.Date)
+    end_date = db.Column(db.Date)
+    event_time = db.Column(db.Time)
     venue_name  = db.Column(db.String)
     location = db.Column(db.String)
     description = db.Column(db.String)
@@ -96,7 +98,7 @@ class Ticket (db.Model,SerializerMixin):
     id = db.Column(db.Integer, primary_key=True)
     ticket_type = db.Column(db.String)
     price = db.Column(db.Integer)
-    purchase_date = db.Column(db.DateTime)
+    # purchase_date = db.Column(db.DateTime)
     quantity = db.Column(db.Integer)
     
     # relationship with event
