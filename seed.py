@@ -1,4 +1,4 @@
-from models import db,Event,Ticket,Order,User
+from models import db,Event,Ticket,Order,User,Testimonial
 from app import app
 from random import choice as rc
 from datetime import datetime, time
@@ -59,9 +59,15 @@ with app.app_context():
         db.session.add(new_ticket)
         db.session.commit()
 
-    # order = [
-    #     {'order_date':'2024-11-11','order_time':'8:00 AM,''},
-    # ]
+    testimonial = [
+        {'customer_image':'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NTN8fHBlb3BsZXxlbnwwfHwwfHx8MA%3D%3D','customer_name':'james kamau','customer_title':'CEO Amapiano Group','review':'The website made it very easy for our customers to purchase their tickets.'},
+        {'customer_image':'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NTN8fHBlb3BsZXxlbnwwfHwwfHx8MA%3D%3D','customer_name':'jane doe','customer_title':'CEO Radio Africa','review': 'The websites ticketing features simplified ticket sales and tracking. Great experience!'},
+        {'customer_image':'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NTN8fHBlb3BsZXxlbnwwfHwwfHx8MA%3D%3D','customer_name':'wambui','customer_title':'CEO Kenya Airways','review': 'The websites promotion tools increased our events visibility. Impressed with the results!'}
+    ]
+    for testimonial_data in testimonial:
+        new_testimonial = Testimonial(**testimonial_data)
+        db.session.add(new_testimonial)
+        db.session.commit()
 
 
 print( "🦸‍♀️ Done seeding!")

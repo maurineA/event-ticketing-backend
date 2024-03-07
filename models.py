@@ -145,6 +145,7 @@ class Testimonial(db.Model,SerializerMixin):
     __tablename__ = 'testimonials'
 
     id = db.Column(db.Integer, primary_key = True)
+    customer_image = db.Column(db.String)
     customer_name = db.Column(db.String)
     customer_title = db.Column(db.String)
     review = db.Column(db.String)
