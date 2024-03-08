@@ -119,12 +119,14 @@ class Event(db.Model,SerializerMixin):
 
     # serialize 
     def serialize(self):
+        # Convert time object to string
+        event_time_str = self.event_time.strftime('%H:%M:%S')
         return {
             'id': self.id,
             'event_name': self.event_name,
             'start_date': self.start_date,
             'end_date': self.end_date,
-            'event_time': self.event_time,
+            'event_time': event_time_str,
             'venue_name': self.venue_name,
             'location': self.location,
             'description': self.description,

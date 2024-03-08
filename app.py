@@ -62,6 +62,9 @@ class AddEvent(Resource):
         db.session.commit()
 
         response_dict = new_event.to_dict()
+        
+        # Convert time object to string before serializing
+        response_dict['event_time'] = event_time_str
 
         response = make_response(
             jsonify(response_dict),
@@ -71,17 +74,17 @@ class AddEvent(Resource):
         return response
     
     
-    # def get(self, id):
+    def get(self, id):
+        response_dict_list = [event.serialize() for event in Event.query.filter_by(id=id).all()]
 
-    #     response_dict = AddEvents.query.filter_by(id=id).first().to_dict()
-        
-        
-    #     response = make_response(
-    #         jsonify(response_dict),
-    #         200,
-    #     )
+        response = make_response(
+            jsonify(response_dict_list),
+            200,
+        )
 
-    #     return response
+        return response
+
+
 
     
 class BuyTicket(Resource):
@@ -119,8 +122,8 @@ class BuyTicket(Resource):
 
 
 api.add_resource(BuyTicket, '/tickets')
-api.add_resource(AddEvent, '/events')
-# api.add_resource(AddEvents, '/events/<int:id>')
+# api.add_resource(AddEvent, '/events')
+api.add_resource(AddEvent, '/events/<int:id>')
 
 
 
