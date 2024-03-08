@@ -84,10 +84,41 @@ class AddEvent(Resource):
     #     return response
 
     
+class BuyTicket(Resource):
+     
+    def post(self):
+        ticket_type = request.get_json()['ticket_type']
+        price = request.get_json()['price']
+        # purchase_date_str = request.get_json()['purchase_date']
+        quantity = request.get_json()['quantity']
+
+        # # Convert date strings to Python date objects
+        # purchase_date = datetime.strptime(purchase_date_str, '%Y-%m-%d').date()
 
 
+        new_ticket = Ticket(
+            
+            ticket_type=ticket_type,
+            price=price,
+            # purchase_date=purchase_date,
+            quantity=quantity
 
-# api.add_resource(AddUser, '/users/<int:id>')
+        )
+
+        db.session.add(new_ticket)
+        db.session.commit()
+
+        response_dict = new_ticket.to_dict()
+
+        response = make_response(
+            jsonify(response_dict),
+            201,
+        )
+
+        return response
+
+
+api.add_resource(BuyTicket, '/tickets')
 api.add_resource(AddEvent, '/events')
 # api.add_resource(AddEvents, '/events/<int:id>')
 
