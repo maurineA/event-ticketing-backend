@@ -21,7 +21,7 @@ class User(db.Model,SerializerMixin):
 
 
     # relationship with event
-    events = db.relationship('Event', backref='user')
+    # events = db.relationship('Event', backref='user')
     # relationship with ticket
     tickets = db.relationship('Ticket', backref='user')
     # relationship with order
@@ -106,11 +106,12 @@ class Event(db.Model,SerializerMixin):
     location = db.Column(db.String)
     description = db.Column(db.String)
     event_type = db.Column(db.String)
+    
 
     # relationship with ticket
     tickets = db.relationship('Ticket', backref='event')
     # relationship to user
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    # user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     # relationship with order
     orders = db.relationship('Order', backref='event')
     # relationship with company
