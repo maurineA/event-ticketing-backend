@@ -17,8 +17,8 @@ class User(db.Model,SerializerMixin):
     email = db.Column(db.String, nullable=False, unique=True)
     contact = db.Column(db.Integer )
     hashed_password = db.Column(db.String, nullable=False)
+    
 
-    # during signup??
 
     # relationship with event
     events = db.relationship('Event', backref='user')
@@ -55,8 +55,44 @@ class User(db.Model,SerializerMixin):
         return {
             'id': self.id,
             'username':self.username,
-            'email': self.email
+            'email': self.email,
+            'contact':self.contact
         }
+    
+class Company(db.Model, SerializerMixin):
+    __tablename__ = 'companies'
+
+    id = db.Column(db.Integer, primary_key=True)
+    company_name = db.Column(db.String, nullable=False, unique=True)
+    company_email = db.Column(db.String, nullable=False, unique=True)
+    company_contact = db.Column(db.Integer)
+    hashed_password = db.Column(db.String, nullable=False)
+
+    # relationship with events
+    events = db.relationship('Event', backref='company')
+
+    # Password getter and setter methods
+    @hybrid_property
+    def password(self):
+        return self.hashed_password
+
+    @password.setter
+    def password(self, plain_text_password):
+        self.hashed_password = bcrypt.generate_password_hash(
+            plain_text_password.encode('utf-8')).decode('utf-8')
+
+    def check_password(self, attempted_password):
+        return bcrypt.check_password_hash(self.hashed_password, attempted_password.encode('utf-8'))
+
+    # serialize
+    def serialize(self):
+        return {
+            'id': self.id,
+            'company_name': self.company_name,
+            'company_email': self.company_email,
+            'company_contact': self.company_contact
+        }
+
 
 class Event(db.Model,SerializerMixin):
     __tablename__ = 'events'
@@ -77,6 +113,8 @@ class Event(db.Model,SerializerMixin):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     # relationship with order
     orders = db.relationship('Order', backref='event')
+    # relationship with company
+    company_id = db.Column(db.Integer, db.ForeignKey('companies.id'))
 
     # serialize 
     def serialize(self):
@@ -89,7 +127,8 @@ class Event(db.Model,SerializerMixin):
             'venue_name': self.venue_name,
             'location': self.location,
             'description': self.description,
-            'event_type': self.event_type
+            'event_type': self.event_type,
+            'company_id': self.company_id
         }
 
 class Ticket (db.Model,SerializerMixin):
@@ -98,7 +137,6 @@ class Ticket (db.Model,SerializerMixin):
     id = db.Column(db.Integer, primary_key=True)
     ticket_type = db.Column(db.String)
     price = db.Column(db.Integer)
-    # purchase_date = db.Column(db.DateTime)
     quantity = db.Column(db.Integer)
     
     # relationship with event
@@ -176,6 +214,10 @@ class Contact(db.Model,SerializerMixin):
         }
     
 
-    # one to many -- user  to  event
-        # one to many -- event to ticket
-        # one to many -- event to ticket 
+class TokenBlocklist(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    jti = db.Column(db.String(), nullable=True)
+    created_at = db.Column(db.DateTime , default=datetime.now())
+
+    def __repr__ (self):
+        return f"<tokem {self.jti}>"
