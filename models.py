@@ -155,7 +155,7 @@ class Ticket (db.Model,SerializerMixin):
             'id': self.id,
             'ticket_type': self.ticket_type,
             'price': self.price,
-            'purchase_date': self.purchase_date,
+            # 'purchase_date': self.purchase_date,
             'quantity': self.quantity
         }
 

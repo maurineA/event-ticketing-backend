@@ -1,4 +1,4 @@
-from models import db,User,Event,Ticket,Contact,Testimonial, datetime
+from models import db,User,Event,Ticket,Contact,Testimonial, datetime, Order
 from flask_migrate import Migrate
 from flask import Flask, jsonify, request, make_response
 from flask_cors import CORS
@@ -62,7 +62,7 @@ class AddEvent(Resource):
         db.session.commit()
 
         response_dict = new_event.to_dict()
-        
+
         # Convert time object to string before serializing
         response_dict['event_time'] = event_time_str
 
@@ -83,8 +83,7 @@ class AddEvent(Resource):
         )
 
         return response
-
-
+    
 
     
 class BuyTicket(Resource):
@@ -119,11 +118,78 @@ class BuyTicket(Resource):
         )
 
         return response
+    
+    
+    def get(self, id):
+        response_dict_list = [tickets.serialize() for tickets in Ticket.query.filter_by(id=id).all()]
+
+        response = make_response(
+            jsonify(response_dict_list),
+            200,
+        )
+
+        return response
+
+class GetTestimonials(Resource):
+    def get(self):
+        response_dict_list = [testimonials.serialize() for testimonials in Testimonial.query.all()]
+
+        response = make_response(
+            jsonify(response_dict_list),
+            200,
+        )
+
+        return response
+
+class GetOrder(Resource):
+    def get(self, id):
+        response_dict_list = [orders.serialize() for orders in Order.query.filter_by(id=id).all()]
+
+        response = make_response(
+            jsonify(response_dict_list),
+            200,
+        )
+
+        return response
+    
+
+class PostContact(Resource):
+    def post(self):
+        full_name = request.get_json()['full_name']
+        email = request.get_json()['email']
+        message = request.get_json()['message']
+
+        new_contact  = Contact(
+           
+            full_name=full_name,
+            email=email,
+            message=message
+        )
+
+        db.session.add(new_contact)
+        db.session.commit()
+
+        response_dict = new_contact.to_dict()
+
+       
+
+        response = make_response(
+            jsonify(response_dict),
+            201,
+        )
+
+        return response
 
 
-api.add_resource(BuyTicket, '/tickets')
-# api.add_resource(AddEvent, '/events')
+
+
+
+
+api.add_resource(GetTestimonials, '/testimonials')
+api.add_resource(BuyTicket, '/tickets/<int:id>')
+api.add_resource(GetOrder, '/orders/<int:id>')
 api.add_resource(AddEvent, '/events/<int:id>')
+api.add_resource(PostContact, '/contacts')
 
 
 
