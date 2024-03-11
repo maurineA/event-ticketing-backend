@@ -74,8 +74,8 @@ class AddEvent(Resource):
         return response
     
     
-    def get(self, id):
-        response_dict_list = [event.serialize() for event in Event.query.filter_by(id=id).all()]
+    def get(self):
+        response_dict_list = [event.serialize() for event in Event.query.all()]
 
         response = make_response(
             jsonify(response_dict_list),
@@ -120,8 +120,8 @@ class BuyTicket(Resource):
         return response
     
     
-    def get(self, id):
-        response_dict_list = [tickets.serialize() for tickets in Ticket.query.filter_by(id=id).all()]
+    def get(self):
+        response_dict_list = [tickets.serialize() for tickets in Ticket.query.all()]
 
         response = make_response(
             jsonify(response_dict_list),
@@ -142,8 +142,8 @@ class GetTestimonials(Resource):
         return response
 
 class GetOrder(Resource):
-    def get(self, id):
-        response_dict_list = [orders.serialize() for orders in Order.query.filter_by(id=id).all()]
+    def get(self):
+        response_dict_list = [orders.serialize() for orders in Order.query.all()]
 
         response = make_response(
             jsonify(response_dict_list),
@@ -186,9 +186,9 @@ class PostContact(Resource):
 
 
 api.add_resource(GetTestimonials, '/testimonials')
-api.add_resource(BuyTicket, '/tickets/<int:id>')
-api.add_resource(GetOrder, '/orders/<int:id>')
-api.add_resource(AddEvent, '/events/<int:id>')
+api.add_resource(BuyTicket, '/tickets')
+api.add_resource(GetOrder, '/orders')
+api.add_resource(AddEvent, '/events')
 api.add_resource(PostContact, '/contacts')
 
 
