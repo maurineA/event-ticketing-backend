@@ -21,7 +21,7 @@ class User(db.Model,SerializerMixin):
 
 
     # relationship with event
-    events = db.relationship('Event', backref='user')
+    # events = db.relationship('Event', backref='user')
     # relationship with ticket
     tickets = db.relationship('Ticket', backref='user')
     # relationship with order
@@ -106,11 +106,12 @@ class Event(db.Model,SerializerMixin):
     location = db.Column(db.String)
     description = db.Column(db.String)
     event_type = db.Column(db.String)
+    
 
     # relationship with ticket
     tickets = db.relationship('Ticket', backref='event')
     # relationship to user
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    # user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     # relationship with order
     orders = db.relationship('Order', backref='event')
     # relationship with company
@@ -118,12 +119,14 @@ class Event(db.Model,SerializerMixin):
 
     # serialize 
     def serialize(self):
+        # Convert time object to string
+        event_time_str = self.event_time.strftime('%H:%M:%S')
         return {
             'id': self.id,
             'event_name': self.event_name,
             'start_date': self.start_date,
             'end_date': self.end_date,
-            'event_time': self.event_time,
+            'event_time': event_time_str,
             'venue_name': self.venue_name,
             'location': self.location,
             'description': self.description,
@@ -152,7 +155,7 @@ class Ticket (db.Model,SerializerMixin):
             'id': self.id,
             'ticket_type': self.ticket_type,
             'price': self.price,
-            'purchase_date': self.purchase_date,
+            # 'purchase_date': self.purchase_date,
             'quantity': self.quantity
         }
 
