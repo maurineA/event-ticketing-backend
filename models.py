@@ -70,6 +70,8 @@ class Company(db.Model, SerializerMixin):
 
     # relationship with events
     events = db.relationship('Event', backref='company')
+    # # relationship with ticket
+    # tickets = db.relationship('Ticket', backref='company')
 
     # Password getter and setter methods
     @hybrid_property
@@ -116,24 +118,36 @@ class Event(db.Model,SerializerMixin):
     orders = db.relationship('Order', backref='event')
     # relationship with company
     company_id = db.Column(db.Integer, db.ForeignKey('companies.id'))
+    # event_time_str = self.event_time.strftime('%H:%M:%S')
 
     # serialize 
     def serialize(self):
-        # Convert time object to string
-        event_time_str = self.event_time.strftime('%H:%M:%S')
+          # Fetch the quantity of tickets available for each ticket type category for this event
+        ticket_categories = {'VVIP': 0, 'VIP': 0, 'Regular': 0}
+
+        # Iterate over each ticket and increment the count for its category
+        tickets = Ticket.query.filter_by(event_id=self.id).all()
+        for ticket in tickets:
+            if ticket.ticket_type == 'vvip':
+                ticket_categories['VVIP'] += ticket.quantity
+            elif ticket.ticket_type == 'vip':
+                ticket_categories['VIP'] += ticket.quantity
+            elif ticket.ticket_type == 'regular':
+                ticket_categories['Regular'] += ticket.quantity
+
         return {
             'id': self.id,
             'event_name': self.event_name,
             'start_date': self.start_date,
             'end_date': self.end_date,
-            'event_time': event_time_str,
-            'venue_name': self.venue_name,
+            'event_time': str(self.event_time), 
+            'venue_name': self.venue_name,       
             'location': self.location,
             'description': self.description,
             'event_type': self.event_type,
-            'company_id': self.company_id
+            'company_id': self.company_id,
+            'ticket_categories': ticket_categories
         }
-
 class Ticket (db.Model,SerializerMixin):
     __tablename__ = 'tickets'
 
@@ -148,15 +162,17 @@ class Ticket (db.Model,SerializerMixin):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     # relationship with order
     order_id = db.Column(db.Integer, db.ForeignKey('orders.id'))
-
+    
     # serialize
     def serialize(self):
         return {
             'id': self.id,
             'ticket_type': self.ticket_type,
             'price': self.price,
-            # 'purchase_date': self.purchase_date,
-            'quantity': self.quantity
+            'quantity': self.quantity,
+            'event_id': self.event_id,
+            # 'user_id': self.user_id,
+            # 'order_id': self.order_id
         }
 
 class Order(db.Model,SerializerMixin):
@@ -173,7 +189,6 @@ class Order(db.Model,SerializerMixin):
     event_id = db.Column(db.Integer, db.ForeignKey('events.id'))
 
     def serialize(self):
-
         return {
             'id': self.id,
             'order_date': self.order_date,
@@ -195,10 +210,14 @@ class Testimonial(db.Model,SerializerMixin):
     def serialize(self):
         return {
             'id':self.id,
+            'customer_image':self.customer_image,
             'customer_name': self.customer_name,
+            'customer_title':self.customer_title,
             'review': self.review,
             # 'rating': self.rating
         }
+    
+    
 
 class Contact(db.Model,SerializerMixin):
     __tablename__ = 'contacts'
