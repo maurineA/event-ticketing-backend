@@ -2,6 +2,7 @@
 from models import User,bcrypt,db,TokenBlocklist,Company
 from flask_jwt_extended import create_access_token,create_refresh_token, jwt_required, get_jwt_identity,get_jwt
 from flask import Blueprint,jsonify,request,make_response
+
 auth_bp = Blueprint('auth', __name__)
 
 @auth_bp.post('/register')
@@ -22,9 +23,7 @@ def signup_for_user():
         return jsonify({'message': 'Email already exists'}), 404
     
     else:
-        password = bcrypt.generate_password_hash(hashed_password.encode('utf-8')).decode('utf-8')
-
-        new_user = User(username=username, email=email, contact=contact, password=password)
+        new_user = User(username=username, email=email, contact=contact, password=hashed_password)
         
         db.session.add(new_user)
         db.session.commit()
@@ -50,9 +49,9 @@ def signup_for_company():
         return {'error': 'Email already exists'}, 404
     else:
 
-        password = bcrypt.generate_password_hash(hashed_password.encode('utf-8')).decode('utf-8')
+        # password = bcrypt.generate_password_hash(hashed_password.encode('utf-8')).decode('utf-8')
         
-        new_company = Company(company_name=company_name, company_email=company_email, company_contact=company_contact, password=password)
+        new_company = Company(company_name=company_name, company_email=company_email, company_contact=company_contact, password=hashed_password)
         db.session.add(new_company)
         db.session.commit()
 
@@ -66,21 +65,22 @@ def login_company():
     company_name = data['company_name']
     company = Company.query.filter_by(company_name=company_name).first()
     if not company:
-        return {'error': 'check on company name,if dont have an account please register'}, 401
-    if bcrypt.check_password_hash(company.hashed_password, data['password']):
-            return {'error':"check on your password"}
-    else:
-        access_token = create_access_token(identity=company.company_name)
-        refresh_token = create_refresh_token(identity=company.company_name)
+        return {'error': 'Check company name, if you dont have an account please register'}, 401
+    
+    if not bcrypt.check_password_hash(company.hashed_password, data['password']):
+        return {'error': 'Incorrect password'}, 401
 
-        return jsonify({
-             'message':'login successfull',
-             'Token':{
-                  'access':access_token,
-                  'refresh':refresh_token,
-             }
+    access_token = create_access_token(identity=company.company_name)
+    refresh_token = create_refresh_token(identity=company.company_name)
 
-        }),200
+    return jsonify({
+        'message': 'Login successful',
+        'Token': {
+            'access': access_token,
+            'refresh': refresh_token,
+        }
+    }), 200
+
 
     
 @auth_bp.post('/login')
@@ -90,20 +90,20 @@ def login_for_user():
     user = User.query.filter_by(username = username).first()
     if not user:
         return {'error': 'check on username,if dont have an account please register'}, 401 
-    if bcrypt.check_password_hash(user.hashed_password,data['password']):
-            return {'error':"check on your password"}
-    else:     
-        access_token = create_access_token(identity=user.username)
-        refresh_token = create_refresh_token(identity=user.username)
+    if not bcrypt.check_password_hash(user.hashed_password,data['password']):
+        return{"wrong password try again"},404
+    
+    access_token = create_access_token(identity=user.username)
+    refresh_token = create_refresh_token(identity=user.username)
 
-        return jsonify({
-             'message':'login successfull',
-             'Token':{
-                  'access':access_token,
-                  'refresh':refresh_token,
-             }
-             
-        }),200
+    return jsonify({
+            'message':'login successfull',
+            'Token':{
+                'access':access_token,
+                'refresh':refresh_token,
+            }
+            
+    }),200
     
 @auth_bp.get('/whoami')
 @jwt_required()

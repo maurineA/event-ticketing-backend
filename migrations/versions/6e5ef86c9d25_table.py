@@ -1,8 +1,8 @@
-"""tokenblocklist
+"""table
 
-Revision ID: f8a071834447
+Revision ID: 6e5ef86c9d25
 Revises: 
-Create Date: 2024-03-08 14:22:12.708162
+Create Date: 2024-03-13 11:03:52.711532
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'f8a071834447'
+revision = '6e5ef86c9d25'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -69,10 +69,8 @@ def upgrade():
     sa.Column('location', sa.String(), nullable=True),
     sa.Column('description', sa.String(), nullable=True),
     sa.Column('event_type', sa.String(), nullable=True),
-    sa.Column('user_id', sa.Integer(), nullable=True),
     sa.Column('company_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['company_id'], ['companies.id'], ),
-    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('orders',
