@@ -195,6 +195,7 @@ class Order(db.Model,SerializerMixin):
             'total_price': self.total_price,
             'quantity': self.quantity
         }
+    
 
 
 class Testimonial(db.Model,SerializerMixin):

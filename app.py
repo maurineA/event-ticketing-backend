@@ -255,6 +255,46 @@ class GetEventTickets(Resource):
 
 api.add_resource(GetEventTickets, '/events/<int:event_id>/tickets')
 
+class Postorder(Resource):
+    @jwt_required()
+    def post(self):
+        data = request.get_json()
+        current_user = get_jwt_identity()
+        user_id = current_user  
+        ticket_type = data.get('ticket_type')
+        quantity = data.get('quantity')
+
+        # Find the event by name
+        event = Event.query.filter_by(event_name=data['event_name']).first()
+        if not event:
+            return {'error': 'Event not found'}, 404
+
+        # Find the ticket by type
+        ticket = Ticket.query.filter_by(event_id=event.id, ticket_type=ticket_type).first()
+        if not ticket:
+            return {'error': 'Ticket not found for the specified type'}, 404
+
+        # Calculate total price based on the ticket price and quantity
+        total_price = int(ticket.price) * int(quantity )     
+        
+        # Create a new order
+        new_order = Order(
+            order_date=datetime.now(),
+            total_price=total_price,
+            quantity=quantity,
+            user_id=user_id,
+            event_id=event.id
+        )
+
+
+        db.session.add(new_order)
+        db.session.commit()
+
+        response = make_response(jsonify(new_order.serialize()), 201)
+        return response
+        # return {'message': 'Order created successfully',}, 201
+api.add_resource(Postorder, '/order')
+
 
 
 
