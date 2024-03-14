@@ -275,8 +275,19 @@ class Postorder(Resource):
             return {'error': 'Ticket not found for the specified type'}, 404
 
         # Calculate total price based on the ticket price and quantity
-        total_price = int(ticket.price) * int(quantity )     
-        
+        total_price = int(ticket.price) * int(quantity )  
+
+        if ticket.quantity == 0:
+            return {'error': 'Ticket is sold out'}, 400  # Return error if the ticket is sold out
+        if int(quantity) == int(0):
+            return {'error': 'Quantity cannot be zero'}, 400  # Return error if the quantity is zero
+        # Check if there are enough tickets available
+        if int(quantity) > int(ticket.quantity): 
+            return {'error': 'Not enough tickets available'}, 400
+
+        # Update the quantity of available tickets
+        ticket.quantity -= int( quantity )  
+            
         # Create a new order
         new_order = Order(
             order_date=datetime.now(),
