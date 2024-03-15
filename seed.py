@@ -12,7 +12,7 @@ with app.app_context():
 
 
     users =[ 
-        {'username':'clement','email':'clementmacharia62@gmail.com','contact':'07438783484','password':'clement'},
+        {'username':'clement','email':'clementmacharia62@gmail.com','contact':'07438783484','password':'clement','is_admin':True},
         {'username':'jane','email':'janemacharia62@gmail.com','contact':'07456783484','password':'jane123'},
         {'username':'wambui','email':'wambui@gmail.com','contact':'07456783484','password':'wambui123'},
 
