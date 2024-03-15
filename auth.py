@@ -5,6 +5,9 @@ from flask import Blueprint,jsonify,request,make_response
 
 auth_bp = Blueprint('auth', __name__)
 
+# is staff  == true 
+
+
 @auth_bp.post('/register')
 def signup_for_user():
     data = request.get_json()
@@ -92,8 +95,11 @@ def login_for_user():
         return {'error': 'check on username,if dont have an account please register'}, 401 
     if not bcrypt.check_password_hash(user.hashed_password,data['password']):
         return{"wrong password try again"},404
-    
-    access_token = create_access_token(identity=user.username)
+    additional_claims = {
+        'is_admin': user.is_admin,
+        'name':user.username,
+    }
+    access_token = create_access_token(identity=user.username,additional_claims=additional_claims)
     refresh_token = create_refresh_token(identity=user.username)
 
     return jsonify({

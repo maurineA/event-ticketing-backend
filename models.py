@@ -17,7 +17,7 @@ class User(db.Model,SerializerMixin):
     email = db.Column(db.String, nullable=False, unique=True)
     contact = db.Column(db.Integer )
     hashed_password = db.Column(db.String, nullable=False)
-    
+    is_admin = db.Column(db.Boolean, default=False)    
 
 
     # relationship with event
@@ -56,7 +56,8 @@ class User(db.Model,SerializerMixin):
             'id': self.id,
             'username':self.username,
             'email': self.email,
-            'contact':self.contact
+            'contact':self.contact,
+            'is_admin':self.is_admin
         }
     
 class Company(db.Model, SerializerMixin):

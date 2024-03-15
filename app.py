@@ -28,11 +28,11 @@ jwt.init_app(app)
 app.register_blueprint(auth_bp, url_prefix='/auth')
 
 #additional claims
-@jwt.additional_claims_loader
-def make_additional_claims(identity):
-    if identity == 'clement':
-        return {"is_staff": True}
-    return{"is_staff": False}
+# @jwt.additional_claims_loader
+# def make_additional_claims(identity):
+#     if identity == '':
+#         return {"is_staff": True}
+#     return{"is_staff": False}
 
 # jwt error handler
 @jwt.expired_token_loader
@@ -305,6 +305,45 @@ class Postorder(Resource):
         return response
         # return {'message': 'Order created successfully',}, 201
 api.add_resource(Postorder, '/order')
+
+from flask import jsonify
+
+@app.route('/admin', methods=['GET'])
+@jwt_required()
+def get():
+        current_user_id = get_jwt_identity()
+        if current_user_id is None:
+            return {'error': 'Invalid JWT token or missing user identity'}, 401
+
+        user = User.query.filter_by(username=current_user_id).first()
+        if not user:
+            return {'error': 'User not found'}, 404
+
+        if not user.is_admin:
+            return {'error': 'Unauthorized access'}, 403 
+        
+        users = [u.serialize() for u in User.query.all()]
+        company = [c.serialize() for c in Company.query.all()]
+        events = [e.serialize() for e in Event.query.all()]
+
+        response_data = {
+            'users': users,
+            'company': company,
+            'events': events,
+            "role": user.is_admin,
+        }
+
+        return jsonify(response_data), 200
+
+class allUsers(Resource):
+    def get(self):
+        users = [u.serialize() for u in User.query.all()]
+        response  = make_response(jsonify(users),200)
+        return response
+    
+api.add_resource(allUsers, '/users')
+
+
 
 
 
