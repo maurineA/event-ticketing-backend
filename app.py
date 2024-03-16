@@ -191,24 +191,7 @@ class GetTestimonials(Resource):
         )
 
         return response
-
-class GetOrder(Resource):
-    @jwt_required() #user must be logged in to view orders
-    def get(self):
-        current_user = get_jwt_identity()
-        user = User.query.filter_by(username=current_user).first()
-        if not user:
-            return {'error': 'User not found'}, 404
-        else:
-            response_dict_list = [orders.serialize() for orders in Order.query.all()]
-
-            response = make_response(
-                jsonify(response_dict_list),
-                200,
-            )
-
-            return response
-    
+  
 
 class PostContact(Resource):
     def post(self):
@@ -255,9 +238,22 @@ class GetEventTickets(Resource):
 
 api.add_resource(GetEventTickets, '/events/<int:event_id>/tickets')
 
-class Postorder(Resource):
-    @jwt_required()
-    def post(self):
+
+   
+@app.route('/userorder', methods=['GET','POST'])
+@jwt_required()
+def get():
+        current_user = get_jwt_identity()
+        user_id = current_user
+        orders = Order.query.filter_by(user_id=user_id).first()
+        if not orders:
+            return {'error': 'No orders found for the specified user'}, 404
+        else:
+            return make_response(jsonify(orders.serialize()), 200)
+               
+         
+@jwt_required()
+def post():
         data = request.get_json()
         current_user = get_jwt_identity()
         user_id = current_user  
@@ -304,36 +300,33 @@ class Postorder(Resource):
         response = make_response(jsonify(new_order.serialize()), 201)
         return response
         # return {'message': 'Order created successfully',}, 201
-api.add_resource(Postorder, '/order')
 
-from flask import jsonify
+# @app.route('/admin', methods=['GET'])
+# @jwt_required()
+# def get():
+#         current_user_id = get_jwt_identity()
+#         if current_user_id is None:
+#             return {'error': 'Invalid JWT token or missing user identity'}, 401
 
-@app.route('/admin', methods=['GET'])
-@jwt_required()
-def get():
-        current_user_id = get_jwt_identity()
-        if current_user_id is None:
-            return {'error': 'Invalid JWT token or missing user identity'}, 401
+#         user = User.query.filter_by(username=current_user_id).first()
+#         if not user:
+#             return {'error': 'User not found'}, 404
 
-        user = User.query.filter_by(username=current_user_id).first()
-        if not user:
-            return {'error': 'User not found'}, 404
-
-        if not user.is_admin:
-            return {'error': 'Unauthorized access'}, 403 
+#         if not user.is_admin:
+#             return {'error': 'Unauthorized access'}, 403 
         
-        users = [u.serialize() for u in User.query.all()]
-        company = [c.serialize() for c in Company.query.all()]
-        events = [e.serialize() for e in Event.query.all()]
+#         users = [u.serialize() for u in User.query.all()]
+#         company = [c.serialize() for c in Company.query.all()]
+#         events = [e.serialize() for e in Event.query.all()]
 
-        response_data = {
-            'users': users,
-            'company': company,
-            'events': events,
-            "role": user.is_admin,
-        }
+#         response_data = {
+#             'users': users,
+#             'company': company,
+#             'events': events,
+#             "role": user.is_admin,
+#         }
 
-        return jsonify(response_data), 200
+#         return jsonify(response_data), 200
 
 class allUsers(Resource):
     def get(self):
@@ -342,6 +335,22 @@ class allUsers(Resource):
         return response
     
 api.add_resource(allUsers, '/users')
+
+@app.route('/company', methods=['GET'])
+@jwt_required()
+def get_company():
+        current_user_id = get_jwt_identity()
+        if current_user_id is None:
+            return {'error': 'Invalid JWT token or missing user identity'}, 401
+
+        company = Company.query.filter_by(company_name=current_user_id).first() 
+        if not company:
+            return {'error': 'Company not found'}, 404
+
+        company = {'company_name': company.company_name}
+        response  = make_response(jsonify(company), 200)
+        return response
+
 
 
 
@@ -352,7 +361,6 @@ api.add_resource(allUsers, '/users')
 
 api.add_resource(GetTestimonials, '/testimonials')
 api.add_resource(BuyTicket, '/tickets')
-api.add_resource(GetOrder, '/orders')
 api.add_resource(AddEvent, '/events')
 api.add_resource(PostContact, '/contacts')
 
