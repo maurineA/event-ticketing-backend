@@ -5,7 +5,7 @@ from flask_cors import CORS
 from flask_restful import Api, Resource
 from flask_jwt_extended import JWTManager,jwt_required,get_jwt_identity
 from auth import auth_bp
-
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -90,6 +90,10 @@ class AddEvent(Resource):
 
             # Convert time string to Python time object
             event_time = datetime.strptime(event_time_str, '%H:%M').time()
+
+            current_date = datetime.now().date()
+            if start_date < current_date:
+                return {'error': 'cannot creat event in the past'}, 400 
 
             new_event = Event(
                 
