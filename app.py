@@ -240,7 +240,7 @@ api.add_resource(GetEventTickets, '/events/<int:event_id>/tickets')
 
 
    
-@app.route('/userorder', methods=['GET','POST'])
+@app.route('/userorder', methods=['GET'])
 @jwt_required()
 def get():
         current_user = get_jwt_identity()
@@ -249,9 +249,11 @@ def get():
         if not orders:
             return {'error': 'No orders found for the specified user'}, 404
         else:
-            return make_response(jsonify(orders.serialize()), 200)
+            data = [order.serialize() for order in Order.query.all()]
+            response = make_response(jsonify(data), 200)
+            return response
                
-         
+@app.route('/userorder', methods=['POST'])    
 @jwt_required()
 def post():
         data = request.get_json()
@@ -299,7 +301,6 @@ def post():
 
         response = make_response(jsonify(new_order.serialize()), 201)
         return response
-        # return {'message': 'Order created successfully',}, 201
 
 # @app.route('/admin', methods=['GET'])
 # @jwt_required()
@@ -350,11 +351,6 @@ def get_company():
         company = {'company_name': company.company_name}
         response  = make_response(jsonify(company), 200)
         return response
-
-
-
-
-
 
 
 
