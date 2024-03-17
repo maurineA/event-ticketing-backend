@@ -92,8 +92,11 @@ class AddEvent(Resource):
             event_time = datetime.strptime(event_time_str, '%H:%M').time()
 
             current_date = datetime.now().date()
-            if start_date < current_date:
+            if start_date and end_date < current_date:
                 return {'error': 'cannot creat event in the past'}, 400 
+            if end_date < start_date:
+                return {'error': 'end date cannot be before start date'}, 400
+         
 
             new_event = Event(
                 
