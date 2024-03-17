@@ -101,6 +101,7 @@ class Event(db.Model,SerializerMixin):
     __tablename__ = 'events'
 
     id = db.Column(db.Integer, primary_key=True)
+    event_image  = db.Column(db.String)
     event_name = db.Column(db.String)
     start_date = db.Column(db.Date)
     end_date = db.Column(db.Date)
@@ -138,6 +139,7 @@ class Event(db.Model,SerializerMixin):
 
         return {
             'id': self.id,
+            'event_image':self.event_image,
             'event_name': self.event_name,
             'start_date': self.start_date,
             'end_date': self.end_date,
