@@ -133,6 +133,27 @@ def get_company_events():
     
     return jsonify(serialized_events), 200
 
+@app.route('/delete_event/<int:event_id>', methods=['DELETE'])
+@jwt_required()
+def delete_event(event_id):
+    try:
+        # Get the current user's identity
+        current_user = get_jwt_identity()
+
+        # Find the event by ID
+        event = Event.query.filter_by(id=event_id).first()
+
+        # Check if the event exists and belongs to the current user's company
+        if not event:
+            return jsonify({'error': 'Event not found'}), 404
+
+        # Delete the event
+        db.session.delete(event)
+        db.session.commit()
+
+        return jsonify({'message': 'Event deleted successfully'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 class BuyTicket(Resource):
     @jwt_required() #user must be logged in to buy a ticket
