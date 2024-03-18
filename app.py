@@ -5,7 +5,7 @@ from flask_cors import CORS
 from flask_restful import Api, Resource
 from flask_jwt_extended import JWTManager,jwt_required,get_jwt_identity
 from auth import auth_bp
-
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -91,6 +91,13 @@ class AddEvent(Resource):
             # Convert time string to Python time object
             event_time = datetime.strptime(event_time_str, '%H:%M').time()
 
+            current_date = datetime.now().date()
+            if start_date and end_date < current_date:
+                return {'error': 'cannot creat event in the past'}, 400 
+            if end_date < start_date:
+                return {'error': 'end date cannot be before start date'}, 400
+         
+
             new_event = Event(
                 
                 event_name=event_name,
@@ -133,6 +140,27 @@ def get_company_events():
     
     return jsonify(serialized_events), 200
 
+@app.route('/delete_event/<int:event_id>', methods=['DELETE'])
+@jwt_required()
+def delete_event(event_id):
+    try:
+        # Get the current user's identity
+        current_user = get_jwt_identity()
+
+        # Find the event by ID
+        event = Event.query.filter_by(id=event_id).first()
+
+        # Check if the event exists and belongs to the current user's company
+        if not event:
+            return jsonify({'error': 'Event not found'}), 404
+
+        # Delete the event
+        db.session.delete(event)
+        db.session.commit()
+
+        return jsonify({'message': 'Event deleted successfully'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 class BuyTicket(Resource):
     @jwt_required() #user must be logged in to buy a ticket
