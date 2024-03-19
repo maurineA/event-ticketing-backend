@@ -10,9 +10,17 @@ flask-migrate = "*"
 sqlalchemy-serializer = "*"
 flask_jwt_extended = "*"
 flask_cors = "*"
+flask-bcrypt = "*"
+flask-restful = "*"
+gunicorn = "*"
+honcho = "*"
+python-dotenv = "*"
+psycopg2 = "*"
+
 
 
 [dev-packages]
 
 [requires]
 python_version = "3.8"
+pip_version = "24.0"
