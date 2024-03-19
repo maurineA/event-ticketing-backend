@@ -1,7 +1,7 @@
 from models import db,Event,Ticket,Order,User,Testimonial
 from app import app
 from random import choice as rc
-from datetime import datetime, time
+from datetime import datetime
 
 with app.app_context():
     Event.query.delete()
@@ -12,9 +12,9 @@ with app.app_context():
 
 
     users =[ 
-        {'username':'clement','email':'clementmacharia62@gmail.com','contact':'07438783484','password':'clement','is_admin':True},
-        {'username':'jane','email':'janemacharia62@gmail.com','contact':'07456783484','password':'jane123'},
-        {'username':'wambui','email':'wambui@gmail.com','contact':'07456783484','password':'wambui123'},
+        {'username':'clement','email':'clementmacharia62@gmail.com','contact':'074387834','password':'clement','is_admin':True},
+        {'username':'jane','email':'janemacharia62@gmail.com','contact':'074567834','password':'jane123'},
+        {'username':'wambui','email':'wambui@gmail.com','contact':'074567834','password':'wambui123'},
 
 
     ]

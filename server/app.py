@@ -1,3 +1,4 @@
+import os
 from models import db,User,Event,Ticket,Contact,Testimonial, datetime, Order,TokenBlocklist,Company
 from flask_migrate import Migrate
 from flask import Flask, jsonify, request, make_response
@@ -10,7 +11,8 @@ from datetime import datetime
 app = Flask(__name__)
 
 app.config['JWT_SECRET_KEY'] = b'\xb2\xd3B\xb9 \xab\xc0By\x13\x10\x84\xb7M!\x11'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///event.db'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///event.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = 24 * 60 * 60
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.json.compact = False
@@ -21,8 +23,6 @@ api = Api(app)
 CORS(app)
 jwt = JWTManager()
 jwt.init_app(app)
-
-# perform other rest routes for  events tickets testimonials and contacts
 
 # register blueprint from auth
 app.register_blueprint(auth_bp, url_prefix='/auth')
@@ -392,6 +392,6 @@ api.add_resource(PostContact, '/contacts')
 
 
 
-if __name__ == '__main__':
-    app.run(port=5555,debug=True)
+# if __name__ == '__main__':
+#     app.run(port=5555,debug=True)
 
