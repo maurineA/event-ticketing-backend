@@ -98,8 +98,7 @@ class AddEvent(Resource):
                 return {'error': 'end date cannot be before start date'}, 400
          
 
-            new_event = Event(
-                
+            new_event = Event(   
                 event_name=event_name,
                 start_date=start_date,
                 end_date=end_date,
@@ -162,7 +161,7 @@ def delete_event(event_id):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-class BuyTicket(Resource):
+class PostTicket(Resource):
     @jwt_required() #user must be logged in to buy a ticket
     def post(self):
         data = request.get_json()
@@ -182,7 +181,8 @@ class BuyTicket(Resource):
                 ticket_type=ticket_type,
                 price=price,
                 quantity=quantity,
-                event_id=event.id,  # Link ticket to the specific event ID
+                event_id=event.id,
+                company_id=company.id  
             )
 
             db.session.add(new_ticket)
@@ -384,7 +384,7 @@ def get_company():
 
 
 api.add_resource(GetTestimonials, '/testimonials')
-api.add_resource(BuyTicket, '/tickets')
+api.add_resource(PostTicket, '/tickets')
 api.add_resource(AddEvent, '/events')
 api.add_resource(PostContact, '/contacts')
 
