@@ -1,8 +1,8 @@
-"""table
+"""tables
 
-Revision ID: 6e5ef86c9d25
+Revision ID: 3b2ce5046926
 Revises: 
-Create Date: 2024-03-13 11:03:52.711532
+Create Date: 2024-03-21 00:20:26.920384
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '6e5ef86c9d25'
+revision = '3b2ce5046926'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -55,12 +55,14 @@ def upgrade():
     sa.Column('email', sa.String(), nullable=False),
     sa.Column('contact', sa.Integer(), nullable=True),
     sa.Column('hashed_password', sa.String(), nullable=False),
+    sa.Column('is_admin', sa.Boolean(), nullable=True),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('email'),
     sa.UniqueConstraint('username')
     )
     op.create_table('events',
     sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('event_image', sa.String(), nullable=True),
     sa.Column('event_name', sa.String(), nullable=True),
     sa.Column('start_date', sa.Date(), nullable=True),
     sa.Column('end_date', sa.Date(), nullable=True),
@@ -69,8 +71,10 @@ def upgrade():
     sa.Column('location', sa.String(), nullable=True),
     sa.Column('description', sa.String(), nullable=True),
     sa.Column('event_type', sa.String(), nullable=True),
+    sa.Column('user_id', sa.Integer(), nullable=True),
     sa.Column('company_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['company_id'], ['companies.id'], ),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('orders',
@@ -90,8 +94,10 @@ def upgrade():
     sa.Column('price', sa.Integer(), nullable=True),
     sa.Column('quantity', sa.Integer(), nullable=True),
     sa.Column('event_id', sa.Integer(), nullable=True),
-    sa.Column('user_id', sa.Integer(), nullable=True),
+    sa.Column('company_id', sa.Integer(), nullable=True),
     sa.Column('order_id', sa.Integer(), nullable=True),
+    sa.Column('user_id', sa.Integer(), nullable=True),
+    sa.ForeignKeyConstraint(['company_id'], ['companies.id'], ),
     sa.ForeignKeyConstraint(['event_id'], ['events.id'], ),
     sa.ForeignKeyConstraint(['order_id'], ['orders.id'], ),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),

@@ -27,6 +27,7 @@ class User(db.Model,SerializerMixin):
     # relationship with order
     orders = db.relationship('Order', backref='user')
 
+
     # validates email
     @validates('email')
     def validate_email(self, key, email):
@@ -72,7 +73,7 @@ class Company(db.Model, SerializerMixin):
     # relationship with events
     events = db.relationship('Event', backref='company')
     # # relationship with ticket
-    # tickets = db.relationship('Ticket', backref='company')
+    tickets = db.relationship('Ticket', backref='company')
 
     # Password getter and setter methods
     @hybrid_property
@@ -115,7 +116,7 @@ class Event(db.Model,SerializerMixin):
     # relationship with ticket
     tickets = db.relationship('Ticket', backref='event')
     # relationship to user
-    # user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     # relationship with order
     orders = db.relationship('Order', backref='event')
     # relationship with company
@@ -162,9 +163,11 @@ class Ticket (db.Model,SerializerMixin):
     # relationship with event
     event_id = db.Column(db.Integer, db.ForeignKey('events.id'))
     # relationship with user
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    company_id = db.Column(db.Integer, db.ForeignKey('companies.id'))
     # relationship with order
     order_id = db.Column(db.Integer, db.ForeignKey('orders.id'))
+    # relationship with user
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     
     # serialize
     def serialize(self):

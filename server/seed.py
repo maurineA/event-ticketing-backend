@@ -4,7 +4,7 @@ from random import choice as rc
 from datetime import datetime
 
 with app.app_context():
-    Event.query.delete()
+    # Event.query.delete()
     Ticket.query.delete()
     Order.query.delete()
     User.query.delete()
