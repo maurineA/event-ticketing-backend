@@ -182,7 +182,7 @@ class PostTicket(Resource):
                 price=price,
                 quantity=quantity,
                 event_id=event.id,
-                company_id=company.id  
+                # company_id=company.id  
             )
 
             db.session.add(new_ticket)
