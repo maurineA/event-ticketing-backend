@@ -4,11 +4,14 @@ from random import choice as rc
 from datetime import datetime
 
 with app.app_context():
-    # Event.query.delete()
+    Event.query.delete()
     Ticket.query.delete()
+    Company.query.delete()
     Order.query.delete()
     User.query.delete()
     Testimonial.query.delete()
+    
+    db.session.commit()
 
 
     users =[ 
@@ -60,7 +63,7 @@ with app.app_context():
         new_ticket = Ticket(**ticket_data)
         new_ticket.event_id = rc(Event.query.all()).id
         new_ticket.user_id = rc(User.query.all()).id
-        new_ticket.company_id = rc(Company.query.all()).id
+        # new_ticket.company_id = rc(Company.query.all()).id
         # new_ticket.order_id = rc(Order.query.all()).id
         db.session.add(new_ticket)
         db.session.commit()
