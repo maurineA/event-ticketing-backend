@@ -1,4 +1,4 @@
-from models import db,Event,Ticket,Order,User,Testimonial
+from models import db,Event,Ticket,Order,User,Testimonial,Company
 from app import app
 from random import choice as rc
 from datetime import datetime
@@ -60,6 +60,7 @@ with app.app_context():
         new_ticket = Ticket(**ticket_data)
         new_ticket.event_id = rc(Event.query.all()).id
         new_ticket.user_id = rc(User.query.all()).id
+        new_ticket.company_id = rc(Company.query.all()).id
         # new_ticket.order_id = rc(Order.query.all()).id
         db.session.add(new_ticket)
         db.session.commit()
